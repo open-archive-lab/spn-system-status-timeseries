@@ -1,0 +1,40 @@
+name: Update DB
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+  workflow_dispatch:
+
+jobs:
+  update-db:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Make script executable
+        run: chmod +x update-db.sh
+
+      - name: Run script
+        id: run-script
+        run: ./update-db.sh
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add db.csv
+          git diff --staged --quiet || git commit -m "[BOT] Update db.csv"
+          git push
+
+      - name: Upload error logs on failure
+        if: steps.run-script.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-logs
+          path: data/log/
