@@ -61,6 +61,8 @@ if [ $CURL_EXIT_CODE -ne 0 ]; then
     log_error "curl command failed (exit code: $CURL_EXIT_CODE). Check network connection or URL." ""
 fi
 
+echo "Response: $RAW_RESPONSE"
+
 # Exception Check 2: Check if API response is empty
 if [ -z "$RAW_RESPONSE" ]; then
     log_error "API returned an empty response." ""
